@@ -9,10 +9,10 @@ const app = express();
 
 // Database connection pool
 const pool = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
+    host: database-1.c1miu8i8yvj3.us-east-1.rds.amazonaws.com,
+    user: admin,
+    password: admin123,
+    database: arrange_my_list,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
@@ -105,8 +105,9 @@ app.use((err, req, res, next) => {
 
 // Start server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`🚀 Arrange My List is running on http://localhost:${PORT}`);
+const HOST = process.env.HOST || '0.0.0.0';
+app.listen(PORT, HOST, () => {
+    console.log(`🚀 Arrange My List is running on http://${HOST}:${PORT}`);
 });
 
 app.get("/health", (req, res) => {
