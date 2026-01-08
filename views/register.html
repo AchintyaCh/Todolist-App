@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Create an account for Arrange My List - Your premium to-do app">
+    <title>Register | Arrange My List</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/animations.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card glass">
+            <div class="auth-header">
+                <img src="/images/logo.png" alt="Arrange My List" class="logo animate-float" style="width: 120px; height: 120px; border-radius: 24px; margin-bottom: 20px; background: rgba(255,255,255,0.95); padding: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);">
+                <h1>Create Account</h1>
+                <p>Join Arrange My List today</p>
+            </div>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label class="form-label" for="displayName">Display Name</label>
+                    <input 
+                        type="text" 
+                        id="displayName" 
+                        name="displayName" 
+                        class="form-control focus-ring" 
+                        placeholder="How should we call you?"
+                        autocomplete="name"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="username">Username *</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        class="form-control focus-ring" 
+                        placeholder="Choose a unique username"
+                        required
+                        autocomplete="username"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="email">Email *</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        class="form-control focus-ring" 
+                        placeholder="your@email.com"
+                        required
+                        autocomplete="email"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">Password *</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        class="form-control focus-ring" 
+                        placeholder="Create a strong password"
+                        required
+                        minlength="6"
+                        autocomplete="new-password"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="confirmPassword">Confirm Password *</label>
+                    <input 
+                        type="password" 
+                        id="confirmPassword" 
+                        name="confirmPassword" 
+                        class="form-control focus-ring" 
+                        placeholder="Confirm your password"
+                        required
+                        autocomplete="new-password"
+                    >
+                </div>
+
+                <div class="form-group" id="errorMessage" style="display: none;">
+                    <div class="toast error" style="width: 100%; min-width: auto;">
+                        <span id="errorText"></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg ripple" style="width: 100%;">
+                    <span id="btnText">Create Account</span>
+                    <div id="btnLoader" class="spinner" style="width: 20px; height: 20px; display: none;"></div>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Already have an account? <a href="/login">Sign in</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const displayName = document.getElementById('displayName').value;
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            const btnText = document.getElementById('btnText');
+            const btnLoader = document.getElementById('btnLoader');
+
+            // Validate passwords match
+            if (password !== confirmPassword) {
+                errorText.textContent = 'Passwords do not match';
+                errorMessage.style.display = 'block';
+                errorMessage.classList.add('animate-shake');
+                setTimeout(() => errorMessage.classList.remove('animate-shake'), 500);
+                return;
+            }
+
+            // Show loading
+            btnText.style.display = 'none';
+            btnLoader.style.display = 'block';
+            errorMessage.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        displayName: displayName || username,
+                        username, 
+                        email, 
+                        password 
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Redirect to dashboard
+                    window.location.href = '/';
+                } else {
+                    errorText.textContent = data.error || 'Registration failed';
+                    errorMessage.style.display = 'block';
+                    errorMessage.classList.add('animate-shake');
+                    setTimeout(() => errorMessage.classList.remove('animate-shake'), 500);
+                }
+            } catch (error) {
+                errorText.textContent = 'Network error. Please try again.';
+                errorMessage.style.display = 'block';
+            } finally {
+                btnText.style.display = 'inline';
+                btnLoader.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

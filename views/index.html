@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Manage your tasks, notes, and calendar with Arrange My List">
+    <title>Dashboard | Arrange My List</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/animations.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="navbar-container">
+            <a href="/" class="navbar-brand">
+                <img src="/images/logo.png" alt="Arrange My List" class="logo" style="width: 50px; height: 50px; border-radius: 12px; background: rgba(255,255,255,0.95); padding: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                <span>Arrange My List</span>
+            </a>
+
+            <ul class="navbar-nav">
+                <li><a href="#" class="nav-link active" data-tab="calendar">📅 Calendar</a></li>
+                <li><a href="#" class="nav-link" data-tab="kanban">📌 Tasks</a></li>
+                <li><a href="#" class="nav-link" data-tab="notes">📝 Notes</a></li>
+            </ul>
+
+            <div class="navbar-user">
+                <a href="/profile" class="user-avatar" id="userAvatar" title="Profile">?</a>
+                <button class="btn btn-sm" id="logoutBtn">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Kanban Board Section -->
+        <section id="kanban-section" class="tab-content">
+            <div class="section-header">
+                <h2 class="section-title">📌 My Tasks</h2>
+                <button class="btn btn-primary ripple" id="addTaskBtn">
+                    <span>+ Add Task</span>
+                </button>
+            </div>
+
+            <div class="kanban-board" id="kanbanBoard">
+                <!-- To Do Column -->
+                <div class="kanban-column glass" data-status="todo">
+                    <div class="kanban-column-header">
+                        <span class="kanban-column-title">
+                            <span>📋</span> To Do
+                        </span>
+                        <span class="kanban-column-count" id="todoCount">0</span>
+                    </div>
+                    <div class="kanban-tasks drop-zone" id="todoTasks"></div>
+                </div>
+
+                <!-- In Progress Column -->
+                <div class="kanban-column glass" data-status="in_progress">
+                    <div class="kanban-column-header">
+                        <span class="kanban-column-title">
+                            <span>⏳</span> In Progress
+                        </span>
+                        <span class="kanban-column-count" id="inProgressCount">0</span>
+                    </div>
+                    <div class="kanban-tasks drop-zone" id="inProgressTasks"></div>
+                </div>
+
+                <!-- Done Column -->
+                <div class="kanban-column glass" data-status="done">
+                    <div class="kanban-column-header">
+                        <span class="kanban-column-title">
+                            <span>✅</span> Done
+                        </span>
+                        <span class="kanban-column-count" id="doneCount">0</span>
+                    </div>
+                    <div class="kanban-tasks drop-zone" id="doneTasks"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Notes Section -->
+        <section id="notes-section" class="tab-content">
+            <div class="section-header">
+                <h2 class="section-title">📝 My Notes</h2>
+                <button class="btn btn-primary ripple" id="addNoteBtn">
+                    <span>+ Add Note</span>
+                </button>
+            </div>
+
+            <div class="notes-grid" id="notesGrid">
+                <!-- Notes will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Calendar Section -->
+        <section id="calendar-section" class="tab-content active">
+            <div class="section-header">
+                <h2 class="section-title">📅 Calendar</h2>
+                <button class="btn btn-primary ripple" id="addEventBtn">
+                    <span>+ Add Event</span>
+                </button>
+            </div>
+
+            <div class="calendar-container glass" id="calendarContainer">
+                <div class="calendar-header">
+                    <div class="calendar-nav">
+                        <button class="btn btn-icon" id="prevMonth">◀</button>
+                        <span class="calendar-month" id="currentMonth">January 2026</span>
+                        <button class="btn btn-icon" id="nextMonth">▶</button>
+                    </div>
+                    <button class="btn btn-sm" id="todayBtn">Today</button>
+                </div>
+
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar will be generated dynamically -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Task Modal -->
+    <div class="modal-overlay" id="taskModal">
+        <div class="modal glass">
+            <div class="modal-header">
+                <h3 class="modal-title" id="taskModalTitle">Add New Task</h3>
+                <button class="modal-close" id="closeTaskModal">&times;</button>
+            </div>
+            <form id="taskForm">
+                <input type="hidden" id="taskId">
+                <div class="form-group">
+                    <label class="form-label" for="taskTitle">Title *</label>
+                    <input type="text" id="taskTitle" class="form-control focus-ring" placeholder="Enter task title" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="taskDescription">Description</label>
+                    <textarea id="taskDescription" class="form-control focus-ring" placeholder="Enter task description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="taskPriority">Priority</label>
+                    <select id="taskPriority" class="form-control focus-ring">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="taskDueDate">Due Date</label>
+                    <input type="datetime-local" id="taskDueDate" class="form-control focus-ring">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" id="cancelTaskBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary ripple">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Note Modal -->
+    <div class="modal-overlay" id="noteModal">
+        <div class="modal glass">
+            <div class="modal-header">
+                <h3 class="modal-title" id="noteModalTitle">Add New Note</h3>
+                <button class="modal-close" id="closeNoteModal">&times;</button>
+            </div>
+            <form id="noteForm">
+                <input type="hidden" id="noteId">
+                <div class="form-group">
+                    <label class="form-label" for="noteTitle">Title *</label>
+                    <input type="text" id="noteTitle" class="form-control focus-ring" placeholder="Note title" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="noteContent">Content</label>
+                    <textarea id="noteContent" class="form-control focus-ring" placeholder="Write your note here..." style="min-height: 150px;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Color</label>
+                    <div class="color-picker" id="noteColorPicker">
+                        <div class="color-option selected" data-color="default" title="Default"></div>
+                        <div class="color-option" data-color="yellow" title="Yellow"></div>
+                        <div class="color-option" data-color="green" title="Green"></div>
+                        <div class="color-option" data-color="blue" title="Blue"></div>
+                        <div class="color-option" data-color="pink" title="Pink"></div>
+                        <div class="color-option" data-color="purple" title="Purple"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" id="cancelNoteBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary ripple">Save Note</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Event Modal -->
+    <div class="modal-overlay" id="eventModal">
+        <div class="modal glass">
+            <div class="modal-header">
+                <h3 class="modal-title" id="eventModalTitle">Add New Event</h3>
+                <button class="modal-close" id="closeEventModal">&times;</button>
+            </div>
+            <form id="eventForm">
+                <input type="hidden" id="eventId">
+                <div class="form-group">
+                    <label class="form-label" for="eventTitle">Title *</label>
+                    <input type="text" id="eventTitle" class="form-control focus-ring" placeholder="Event title" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="eventDescription">Description</label>
+                    <textarea id="eventDescription" class="form-control focus-ring" placeholder="Event description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="eventStartTime">Start Time *</label>
+                    <input type="datetime-local" id="eventStartTime" class="form-control focus-ring" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="eventEndTime">End Time *</label>
+                    <input type="datetime-local" id="eventEndTime" class="form-control focus-ring" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Color</label>
+                    <div class="color-picker" id="eventColorPicker">
+                        <div class="color-option selected" data-color="blue" title="Blue" style="background: #3b82f6;"></div>
+                        <div class="color-option" data-color="red" title="Red" style="background: #ef4444;"></div>
+                        <div class="color-option" data-color="green" title="Green" style="background: #22c55e;"></div>
+                        <div class="color-option" data-color="yellow" title="Yellow" style="background: #eab308;"></div>
+                        <div class="color-option" data-color="purple" title="Purple" style="background: #8b5cf6;"></div>
+                        <div class="color-option" data-color="pink" title="Pink" style="background: #ec4899;"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="deleteEventBtn" style="margin-right: auto; display: none;">Delete</button>
+                    <button type="button" class="btn" id="cancelEventBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary ripple">Save Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="/js/app.js"></script>
+    <script src="/js/kanban.js"></script>
+    <script src="/js/notes.js"></script>
+    <script src="/js/calendar.js"></script>
+</body>
+</html>
