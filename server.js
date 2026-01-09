@@ -9,10 +9,10 @@ const app = express();
 
 // Database connection pool
 const pool = mysql.createPool({
-    host: database-1.c1miu8i8yvj3.us-east-1.rds.amazonaws.com,
-    user: admin,
-    password: admin123,
-    database: arrange_my_list,
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
