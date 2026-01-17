@@ -107,7 +107,7 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
 app.listen(PORT, HOST, () => {
-    console.log(`🚀 Arrange My List is running on http://${HOST}:${PORT}`);
+    console.log(` Arrange My List is running on http://${HOST}:${PORT}`);
 });
 
 app.get("/health", (req, res) => {
